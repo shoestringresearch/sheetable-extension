@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<script src="/base/node_modules/comlink/dist/umd/comlink.min.js"></script>
+<script>
+Comlink.expose({
+  foo(a, b) {
+    console.log('foo:', a, b);
+    return a + b;
+  }
+}, Comlink.windowEndpoint(window.parent));
+</script>

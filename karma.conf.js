@@ -17,20 +17,31 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/comlink/dist/umd/comlink.min.js',
-      'dist/**/*.js',
+      {
+        pattern: 'node_modules/comlink/dist/umd/comlink.min.js',
+        included: true,
+        served: true
+      },
+      {
+        pattern: 'dist/**/*.js',
+        included: true,
+        served: true
+      },
+      {
+        pattern: 'test/extension.html',
+        included: false,
+        served: true
+      },
       'test/**/*.js'
     ],
 
+    proxies: {
+      '/test/': '/base/test/'
+    },
+    
     // list of files / patterns to exclude
     exclude: [
     ],
-
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-      '**/*.html': ['html2js']
-    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
