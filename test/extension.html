@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<script src="/base/node_modules/comlink/dist/umd/comlink.min.js"></script>
+<script src="/base/dist/index.js"></script>
 <script>
-Comlink.expose({
-  foo(a, b) {
-    console.log('foo:', a, b);
-    return a + b;
-  }
-}, Comlink.windowEndpoint(window.parent));
+// Set the callback to provide a MessagePort.
+Sheetable.provideMessagePort(() => {
+  // Create a new channel.
+  let channel = new MessageChannel();
+
+  // Set the request handler callback for one port...
+  Sheetable.attachRequestHandler(channel.port1, async (a, b, f) => {
+    // In this test, the other side of the channel will send two
+    // arguments and a function proxy. We call this function, which
+    // will makes a nested RPC in the reverse direction, and return
+    // the result.
+    return await f(a, b);
+  });
+
+  // ...and return the other port.
+  return channel.port2;
+});
 </script>

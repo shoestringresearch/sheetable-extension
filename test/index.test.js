@@ -1,29 +1,23 @@
-describe('Sheetable inside extension', function() {
-  it('should exist', function() {
-    expect(Sheetable).toBeDefined();
-  });
-  
-  it('should have methods', function() {
-    expect(Sheetable.provideMessagePort).toBeDefined();
-    expect(Sheetable.attachRequestHandler).toBeDefined();
-  });
-});
-
-describe('Sheetable outside extension', function() {
+describe('Sheetable extension', function() {
   document.querySelector('body').innerHTML =
     `<iframe id="iframe" src="/test/extension.html" />`;
   let iframe = document.getElementById('iframe');
-  iframe.contentWindow.console = console;
   let iframeReady = new Promise(resolve => iframe.onload = resolve);
 
+  // Let Karma display iframe console output.
+  // https://github.com/karma-runner/karma/issues/1373
+  iframe.contentWindow.console = console;
+  
   let proxy;
   beforeAll(async function() {
     await iframeReady;
     proxy = Comlink.wrap(Comlink.windowEndpoint(iframe.contentWindow));
   });
   
-  it('should call function', async function() {
-    let result = await proxy.foo(1, 2);
-    expect(result).toBe(1 + 2);
+  it('should make RPC', async function() {
+    let port = await proxy.getMessagePort();
+    let remote = Comlink.wrap(port);
+    let result = await remote.request(1, 2, Comlink.proxy((a, b) => a + b));
+    expect(result).toBe(3);
   });
 });
