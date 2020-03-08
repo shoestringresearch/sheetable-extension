@@ -1,0 +1,13 @@
+{
+  "name": "sheetable-extension",
+  "version": "1.0.0",
+  "description": "Sheetable API for Javascript extensions",
+  "module": "index.js",
+  "scripts": {
+    "build": "npx rollup -c",
+    "test": "npm run build && npx karma start"
+  },
+  "dependencies": {
+    "comlink": "^4.2.0"
+  }
+}
