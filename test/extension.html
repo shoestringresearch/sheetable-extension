@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <script src="/base/dist/Sheetable.js"></script>
 <script>
+
+let localPorts = new Map();
+
 // Set the callback to provide a MessagePort.
-Sheetable.provideMessagePort(() => {
+Sheetable.provideChannel((name) => {
   // Create a new channel.
   let channel = new MessageChannel();
-
+  localPorts.set(name, channel.port1);
+  
   // Set the request handler callback for one port...
   Sheetable.attachRequestHandler(channel.port1, async (a, b, f) => {
     // In this test, the other side of the channel will send two
@@ -17,5 +21,8 @@ Sheetable.provideMessagePort(() => {
 
   // ...and return the other port.
   return channel.port2;
+}, (name) => {
+  let port = localPorts.get(name);
+  port && port.close();
 });
 </script>

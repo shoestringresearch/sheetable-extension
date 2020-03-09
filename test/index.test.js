@@ -9,15 +9,15 @@ describe('Sheetable iframe', function() {
   // https://github.com/karma-runner/karma/issues/1373
   iframe.contentWindow.console = console;
 
-  // Use Comlink to get the remote proxy.
+  // Use Comlink to get the remote proxies.
+  let portProxy;
   let requestProxy;
   beforeAll(async function() {
     await iframeReady;
 
     // Get the MessagePort from the iframe.
-    let portProxy = Comlink.wrap(Comlink.windowEndpoint(iframe.contentWindow));
-    let port = await portProxy.getMessagePort();
-    portProxy[Comlink.releaseProxy]();
+    portProxy = Comlink.wrap(Comlink.windowEndpoint(iframe.contentWindow));
+    let port = await portProxy.openChannel('Edwin');
     
     // Wrap the port.
     requestProxy = Comlink.wrap(port);
@@ -45,8 +45,18 @@ describe('Sheetable iframe', function() {
           throw err;
         }))).toBeRejectedWith(err);
   });
+
+  it('should ping', async function() {
+    let pong = requestProxy.ping();
+    let timeout = new Promise((resolve, reject) => {
+      setTimeout(() => reject(new Error('timeout')), 1000);
+    });
+    expectAsync(Promise.all([pong, timeout])).toBeResolved();
+  });
   
-  afterAll(function() {
+  afterAll(async function() {
     requestProxy[Comlink.releaseProxy]();
+    await portProxy.closeChannel('Edwin');
+    portProxy[Comlink.releaseProxy]();
   });
 });
