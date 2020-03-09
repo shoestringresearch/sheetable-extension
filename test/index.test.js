@@ -23,14 +23,30 @@ describe('Sheetable iframe', function() {
     requestProxy = Comlink.wrap(port);
   });
   
-  it('should make RPC', async function() {
+  it('should accept remote calls', async function() {
     // Now we can make calls to the proxy. Objects (including
-    // functions) can be passed as arguments using a proxy wrapper.
+    // functions) can be passed by proxy with the help of a wrapper.
     let result = await requestProxy.request(1, 2, Comlink.proxy((a, b) => a + b));
     expect(result).toBe(3);
   });
 
+  it('should propagate exceptions', async function() {
+    // This should throw on the remote side because the third
+    // argument is a number (not a function).
+    expectAsync(requestProxy.request(1, 2, 3)).toBeRejected();
+
+    // This should throw on the local side, which is propagated
+    // to the remote side, and back again.
+    const err = new Error("how now brown cow");
+    expectAsync(
+      requestProxy.request(
+        1, 2,
+        Comlink.proxy(() => {
+          throw err;
+        }))).toBeRejectedWith(err);
+  });
+  
   afterAll(function() {
-    requestProxy[Comlink.relaseProxy]();
+    requestProxy[Comlink.releaseProxy]();
   });
 });
