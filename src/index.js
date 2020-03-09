@@ -3,15 +3,20 @@ import * as Comlink from 'comlink';
 export default {
 
   /**
-   * Install a callback to return a MessagePort.
+   * Install callbacks to manage a MessagePort.
    *
-   * @param {function} callback
+   * @param {function} openCallback
+   * @param {function} closeCallback
    */
-  provideMessagePort(callback) {
+  provideChannel(openCallback, closeCallback) {
     Comlink.expose({
-      async getMessagePort() {
-        let port = await callback();
+      async openChannel(name) {
+        let port = await openCallback(name);
         return Comlink.transfer(port, [port]);
+      },
+
+      async closeChannel(name) {
+        closeCallback && await closeCallback(name);
       }
     }, Comlink.windowEndpoint(self.parent));
   },
