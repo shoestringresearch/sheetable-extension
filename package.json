@@ -4,8 +4,8 @@
   "description": "Sheetable API for Javascript extensions",
   "module": "index.js",
   "scripts": {
-    "build": "npx rollup -c",
-    "test": "npm run build && npx karma start"
+    "build": "rollup -c",
+    "test": "npm run build && karma start"
   },
   "dependencies": {
     "comlink": "^4.2.0"
