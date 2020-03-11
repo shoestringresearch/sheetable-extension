@@ -9,28 +9,26 @@ module.exports = function(config) {
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine'],
-    plugins: [
-      'karma-jasmine',
-      'karma-chrome-launcher',
-      'karma-html2js-preprocessor'
-    ],
-
+    
     // list of files / patterns to load in the browser
     files: [
       {
         pattern: 'node_modules/comlink/dist/umd/comlink.min.js',
         included: true,
-        served: true
+        watched: false
       },
       {
         pattern: 'dist/**/*.js',
         included: true,
+      },
+      {
+        pattern: 'dist/**/*.js.map',
+        included: false,
         served: true
       },
       {
         pattern: 'test/extension.html',
         included: false,
-        served: true
       },
       'test/**/*.js'
     ],
@@ -39,10 +37,6 @@ module.exports = function(config) {
       '/test/': '/base/test/'
     },
     
-    // list of files / patterns to exclude
-    exclude: [
-    ],
-
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
@@ -64,7 +58,7 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['ChromeHeadless'],
-
+    
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: true,
